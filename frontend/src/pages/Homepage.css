@@ -1,0 +1,370 @@
+.home-page {
+  min-height: 100vh;
+  background: #FDF6EC;
+}
+
+/* Centers content and gives it breathing room on wide screens,
+   while staying edge-to-edge on mobile */
+.home-page__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+@media (min-width: 700px) {
+  .home-page__inner {
+    padding: 32px 40px;
+  }
+}
+
+.home-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.home-page__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-page__icon-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.home-page__icon-btn:hover {
+  background: rgba(140, 106, 74, 0.08);
+}
+
+.home-page__icon-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.home-page__icon-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.home-page__subtitle {
+  color: #8C6A4A;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.home-page__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #5C3D1E;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .home-page__title {
+    font-size: 40px;
+  }
+}
+
+/* Empty / loading state */
+.home-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.home-page__empty-image {
+  width: 80px;
+  height: 80px;
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+
+.home-page__empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #5C3D1E;
+  margin: 0 0 6px;
+}
+
+.home-page__empty-subtitle {
+  font-size: 13px;
+  color: #8C6A4A;
+  margin: 0 0 20px;
+}
+
+.home-page__empty-btn {
+  background: #E76F51;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.home-page__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(231, 111, 81, 0.25);
+  border-top-color: #E76F51;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ---------- Card view ----------
+   auto-fill lets the browser decide how many columns fit —
+   1 column on phones, several on wide screens, no JS needed */
+.home-page__recipes--card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---------- List view ----------
+   Single column always — a list is meant to be scanned top to bottom */
+.home-page__recipes--list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ---------- Grid / masonry view ----------
+   CSS columns give a true masonry effect natively —
+   no need to manually split recipes into left/right arrays like in RN */
+.home-page__recipes--grid {
+  column-count: 2;
+  column-gap: 12px;
+}
+
+@media (min-width: 700px) {
+  .home-page__recipes--grid {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1100px) {
+  .home-page__recipes--grid {
+    column-count: 4;
+  }
+}
+
+.home-page__recipes--grid > * {
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
+
+/* ---------- Shared recipe card styles ---------- */
+.recipe-card {
+  background: #FFFDF7;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.recipe-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(92, 61, 30, 0.1);
+}
+
+.recipe-card--grid {
+  border-radius: 16px;
+}
+
+.recipe-card__image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.recipe-card__image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.recipe-card__image--grid {
+  height: 130px;
+}
+
+.recipe-card__placeholder {
+  width: 100%;
+  height: 120px;
+  background: #FFFDF7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-card__placeholder-logo {
+  width: 60px;
+  height: 60px;
+  opacity: 0.5;
+}
+
+.recipe-card__pills {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recipe-card__pill {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.recipe-card__content {
+  padding: 10px;
+  position: relative;
+}
+
+.recipe-card__title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #5C3D1E;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.recipe-card__subtitle {
+  color: #8C6A4A;
+  font-size: 12px;
+  margin: 4px 0;
+  letter-spacing: -0.5px;
+}
+
+.recipe-card__meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.recipe-card__meta {
+  font-size: 12px;
+  color: #8C6A4A;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.recipe-card__bookmark {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* ---------- List item ---------- */
+.recipe-list-item {
+  display: flex;
+  align-items: center;
+  background: #FFFDF7;
+  border-radius: 14px;
+  padding: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.recipe-list-item:hover {
+  box-shadow: 0 6px 16px rgba(92, 61, 30, 0.08);
+}
+
+.recipe-list-item__image-wrap {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.recipe-card__image--list {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recipe-card__placeholder--list {
+  width: 100%;
+  height: 100%;
+}
+
+.recipe-list-item__content {
+  flex: 1;
+  margin-left: 12px;
+}
+
+.recipe-list-item__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C3D1E;
+  margin: 0;
+}
+
+.recipe-list-item__meta {
+  font-size: 12px;
+  color: #8C6A4A;
+  margin: 2px 0 0;
+}
+
+.recipe-list-item__bookmark {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 12px;
+}
+
+/* ---------- Author tag (shared) ---------- */
+.author-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.author-tag__avatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-tag__avatar--placeholder {
+  background: #EDE7E3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.author-tag__name {
+  font-size: 10px;
+  opacity: 0.5;
+  color: #8C6A4A;
+}

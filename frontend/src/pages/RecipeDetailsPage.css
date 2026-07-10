@@ -1,0 +1,355 @@
+.recipe-details__center {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-details__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(231, 111, 81, 0.25);
+  border-top-color: #E76F51;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.recipe-details {
+  background: #FDF6EC;
+  min-height: 100vh;
+}
+
+/* ---------- Mobile: image up top, content card overlapping below ---------- */
+.recipe-details__media {
+  position: relative;
+}
+
+.recipe-details__image {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.recipe-details__placeholder {
+  width: 100%;
+  height: 260px;
+  background: linear-gradient(135deg, #F3EDE9, #E7DFD8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-details__placeholder-logo {
+  width: 60px;
+  height: 60px;
+}
+
+.recipe-details__placeholder-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #A8A29E;
+}
+
+.recipe-details__back-btn,
+.recipe-details__menu-btn {
+  position: absolute;
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: #FFFDF7;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #5C3D1E;
+  box-shadow: 0 4px 12px rgba(92, 61, 30, 0.12);
+}
+
+.recipe-details__back-btn {
+  left: 20px;
+}
+
+.recipe-details__menu-btn {
+  right: 20px;
+}
+
+.recipe-details__menu {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background: #FFFDF7;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 8px 24px rgba(92, 61, 30, 0.15);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.recipe-details__menu-item {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #5C3D1E;
+}
+
+.recipe-details__menu-item:hover {
+  background: rgba(140, 106, 74, 0.08);
+}
+
+.recipe-details__menu-item--danger {
+  color: #E23744;
+}
+
+.recipe-details__content {
+  background: #FFFDF7;
+  margin-top: -24px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px 20px 40px;
+  position: relative;
+}
+
+.recipe-details__category {
+  display: inline-block;
+  color: #E07A5F;
+  font-weight: 600;
+  margin-right: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.recipe-details__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #5C3D1E;
+  margin: 0;
+}
+
+.recipe-details__description {
+  color: #8C6A4A;
+  margin: 6px 0 20px;
+}
+
+.recipe-details__stats-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.recipe-details__stat {
+  background: #F2F2F2;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-details__stat-value {
+  font-weight: 700;
+  color: #5C3D1E;
+}
+
+.recipe-details__stat-label {
+  font-size: 12px;
+  color: #8C6A4A;
+}
+
+.recipe-details__section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+  color: #5C3D1E;
+}
+
+.recipe-details__ingredient-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.recipe-details__bullet {
+  color: #E07A5F;
+  font-size: 25px;
+  margin-right: 8px;
+  line-height: 1;
+}
+
+.recipe-details__ingredient-text {
+  flex: 1;
+  color: #5C3D1E;
+}
+
+.recipe-details__step {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.recipe-details__step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background: #E07A5F;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.recipe-details__step-body {
+  flex: 1;
+}
+
+.recipe-details__step-text {
+  margin: 3px 0 4px;
+  color: #5C3D1E;
+}
+
+.recipe-details__tip {
+  color: #4CAF50;
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.recipe-details__timer-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FDF0E8;
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-width: 160px;
+  gap: 10px;
+}
+
+.recipe-details__timer-text {
+  color: #5C3D1E;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.recipe-details__timer-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.recipe-details__timer-btn {
+  background: #E76F51;
+  border: none;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.recipe-details__timer-btn--reset {
+  background: #EDE7E3;
+}
+
+.recipe-details__start-btn {
+  width: 100%;
+  background: #E76F51;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-top: 30px;
+}
+
+.recipe-details__start-btn:hover {
+  background: #d9603f;
+}
+
+/* ---------- Wide screens: two-column layout, image sticky on the left ----------
+   This is the payoff for the extra screen space — instead of an overlapping
+   card, the image and content sit side by side and the image stays in view
+   while you scroll the ingredients/steps. */
+@media (min-width: 900px) {
+  .recipe-details {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  /* Image column: sized to its own content (flex-grow: 0), but allowed
+     to shrink (flex-shrink: 1) if the content column needs more room
+     than is left over. min-width: 0 is required for a flex child to be
+     allowed to shrink below its content's natural size at all. */
+  .recipe-details__media {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* max-height/max-width + auto sizing = the image renders at its
+     natural aspect ratio, as large as the box allows. When the box
+     is forced narrower (content claiming its min-width), the image
+     scales itself down proportionally and stays centered — no crop,
+     no distortion. */
+  .recipe-details__image,
+  .recipe-details__placeholder {
+    height: auto;
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .recipe-details__placeholder {
+    width: 400px; /* placeholders have no intrinsic size to shrink-wrap to */
+    flex-shrink: 0;
+  }
+
+  /* Content column: never shrinks below a comfortable reading width,
+     grows to absorb whatever space the image doesn't need. */
+  .recipe-details__content {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 24px;
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-width: 420px;
+    padding: 48px 56px 60px;
+  }
+
+  .recipe-details__content-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .recipe-details__title {
+    font-size: 32px;
+  }
+}
