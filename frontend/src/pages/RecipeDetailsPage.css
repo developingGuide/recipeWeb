@@ -26,31 +26,25 @@
 
 /* ---------- Mobile: image up top, content card overlapping below ---------- */
 .recipe-details__media {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    flex-grow: 0;
-    flex-shrink: 1;
-    flex-basis: auto;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 48px;         /* ← the frame */
-    box-sizing: border-box;
-    background: #FDF6EC;   /* ← page background, so the padding reads as a margin, not a card */
-  }
+  position: relative;
+  width: 100%;
+}
 
-  .recipe-details__image,
-  .recipe-details__placeholder {
-    height: auto;
-    width: auto;
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-    border-radius: 16px;   /* optional, but rounded corners read nicer once it's not edge-to-edge */
-  }
+.recipe-details__image,
+.recipe-details__placeholder {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.recipe-details__placeholder {
+  background: linear-gradient(135deg, #F3EDE9, #E7DFD8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .recipe-details__placeholder-logo {
   width: 60px;
@@ -301,10 +295,6 @@
     align-items: flex-start;
   }
 
-  /* Image column: sized to its own content (flex-grow: 0), but allowed
-     to shrink (flex-shrink: 1) if the content column needs more room
-     than is left over. min-width: 0 is required for a flex child to be
-     allowed to shrink below its content's natural size at all. */
   .recipe-details__media {
     position: sticky;
     top: 0;
@@ -317,13 +307,11 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    padding: 48px;         /* ← the frame, back on desktop only */
+    box-sizing: border-box;
+    background: #FDF6EC;
   }
 
-  /* max-height/max-width + auto sizing = the image renders at its
-     natural aspect ratio, as large as the box allows. When the box
-     is forced narrower (content claiming its min-width), the image
-     scales itself down proportionally and stays centered — no crop,
-     no distortion. */
   .recipe-details__image,
   .recipe-details__placeholder {
     height: auto;
@@ -331,15 +319,14 @@
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
+    border-radius: 16px;
   }
 
   .recipe-details__placeholder {
-    width: 400px; /* placeholders have no intrinsic size to shrink-wrap to */
+    width: 400px;
     flex-shrink: 0;
   }
 
-  /* Content column: never shrinks below a comfortable reading width,
-     grows to absorb whatever space the image doesn't need. */
   .recipe-details__content {
     margin-top: 0;
     border-top-left-radius: 0;
