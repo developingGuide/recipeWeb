@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoTimeOutline, IoPeopleOutline, IoBookmark, IoBookmarkOutline } from "react-icons/io5";
-import AuthorTag from "./AuthorTag";
+import AuthorTag from "./Authortag";
 import { getContrastTextColor } from "../../lib/colorUtils";
 
 export default function RecipeCard({
