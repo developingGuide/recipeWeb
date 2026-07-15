@@ -140,7 +140,7 @@ export default function RecipeDetailsPage() {
           <img src={recipe.image_url} alt={recipe.title} className="recipe-details__image" />
         ) : (
           <div className="recipe-details__placeholder">
-            <img src="/assets/logo-no-bkg.png" alt="" className="recipe-details__placeholder-logo" />
+            <img src="/logo-no-bkg.png" alt="" className="recipe-details__placeholder-logo" />
             <p className="recipe-details__placeholder-text">No Image Available</p>
           </div>
         )}

@@ -63,7 +63,7 @@ export default function RecipeCard({
           viewMode === "list" ? "recipe-card__placeholder recipe-card__placeholder--list" : "recipe-card__placeholder"
         }
       >
-        <img src="/assets/gray-logo.png" alt="" className="recipe-card__placeholder-logo" />
+        <img src="/grayLogo.png" alt="" className="recipe-card__placeholder-logo" />
       </div>
     );
 

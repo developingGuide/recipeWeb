@@ -242,7 +242,7 @@ export default function HomePage() {
           </div>
         ) : recipes.length === 0 ? (
           <div className="home-page__empty">
-            <img src="../src/assets/cracked-bowl-no-bkg.png" alt="" className="home-page__empty-image" />
+            <img src="/cracked-bowl-no-bkg.png" alt="" className="home-page__empty-image" />
             <h2 className="home-page__empty-title">No recipes yet</h2>
             <p className="home-page__empty-subtitle">
               Start adding your own recipes and build your collection!
@@ -294,7 +294,7 @@ export default function HomePage() {
       {showAppModal && (
         <div className="app-modal-overlay" onClick={() => setShowAppModal(false)}>
           <div className="app-modal" onClick={(e) => e.stopPropagation()}>
-            <img src="../src/assets/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
+            <img src="/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
             <h2 className="app-modal__title">Add recipes on the go</h2>
             <p className="app-modal__text">
               Adding and editing recipes is available in the Recipease app!
@@ -321,7 +321,7 @@ export default function HomePage() {
       {showWelcomeModal && (
         <div className="app-modal-overlay" onClick={() => setShowWelcomeModal(false)}>
           <div className="app-modal" onClick={(e) => e.stopPropagation()}>
-            <img src="../src/assets/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
+            <img src="/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
             <h2 className="app-modal__title">Welcome to Recipease</h2>
             <p className="app-modal__text">
               For the full and better experience (adding recipes, AI autofill, meal planning,
