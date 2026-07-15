@@ -4,7 +4,7 @@ import { IoAlbumsOutline, IoListOutline, IoGridOutline, IoSearchOutline, IoRefre
 import { supabase } from "../../lib/supabase";
 import RecipeCard from "../components/RecipeCard";
 import Toast from "../components/Toast";
-import "./HomePage.css";
+import "./Homepage.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -21,6 +21,11 @@ export default function HomePage() {
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  // add to state declarations
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  const [showAppModal, setShowAppModal] = useState(false);
   const toastTimer = useRef(null);
 
   const fetchProfiles = async (userIds) => {
@@ -144,7 +149,7 @@ export default function HomePage() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      showToast("Sign in to save recipes");
+      setShowAppModal(true);
       return;
     }
     const isSaved = savedRecipeIds.has(recipeId);
@@ -177,6 +182,17 @@ export default function HomePage() {
       return next;
     });
   };
+
+  useEffect(() => {
+    const hasSeenPrompt = localStorage.getItem("hasSeenAppPrompt");
+    if (!hasSeenPrompt) {
+      const timer = setTimeout(() => {
+        setShowWelcomeModal(true);
+        localStorage.setItem("hasSeenAppPrompt", "true");
+      }, 1200); // small delay so it doesn't slam the user the instant the page paints
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     fetchRecipes();
@@ -253,7 +269,82 @@ export default function HomePage() {
         )}
       </div>
 
+      <p className="home-page__footer-text">Enjoy the full experiece with the
+        {' '}
+        <a
+          href="https://apps.apple.com/app/recipease-save-plan-cook/id6763539720"
+          className="app-footer__store-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Recipease App
+        </a>
+      </p> 
+
       <Toast visible={toastVisible} message={toastMessage} />
+
+      <button
+        className="home-page__fab"
+        onClick={() => setShowAppModal(true)}
+        aria-label="Add recipe"
+      >
+        +
+      </button>
+
+      {showAppModal && (
+        <div className="app-modal-overlay" onClick={() => setShowAppModal(false)}>
+          <div className="app-modal" onClick={(e) => e.stopPropagation()}>
+            <img src="../src/assets/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
+            <h2 className="app-modal__title">Add recipes on the go</h2>
+            <p className="app-modal__text">
+              Adding and editing recipes is available in the Recipease app!
+            </p>
+            <p className="app-modal__text">
+              Snap photos, use AI autofill, plan your meals and build your collection from your phone.
+            </p>
+            
+            <a
+              href="https://apps.apple.com/app/recipease-save-plan-cook/id6763539720"
+              className="app-modal__store-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get it on the App Store
+            </a>
+            <button className="app-modal__dismiss" onClick={() => setShowAppModal(false)}>
+              Maybe later
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showWelcomeModal && (
+        <div className="app-modal-overlay" onClick={() => setShowWelcomeModal(false)}>
+          <div className="app-modal" onClick={(e) => e.stopPropagation()}>
+            <img src="../src/assets/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
+            <h2 className="app-modal__title">Welcome to Recipease</h2>
+            <p className="app-modal__text">
+              For the full and better experience (adding recipes, AI autofill, meal planning,
+              and more...) grab the Recipease app.
+            </p>
+            <p className="app-modal__text">
+              This web version is still great for browsing.
+            </p>
+            
+            <a
+              href="https://apps.apple.com/app/recipease-save-plan-cook/id6763539720"
+              className="app-modal__store-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get it on the App Store
+            </a>
+            <button className="app-modal__dismiss" onClick={() => setShowWelcomeModal(false)}>
+              Continue browsing
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

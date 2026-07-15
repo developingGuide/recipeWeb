@@ -8,7 +8,7 @@ import {
   IoPause,
   IoRefresh,
 } from "react-icons/io5";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import "./RecipeDetailsPage.css";
 
 export default function RecipeDetailsPage() {

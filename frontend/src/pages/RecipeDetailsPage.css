@@ -26,25 +26,31 @@
 
 /* ---------- Mobile: image up top, content card overlapping below ---------- */
 .recipe-details__media {
-  position: relative;
-}
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 48px;         /* ← the frame */
+    box-sizing: border-box;
+    background: #FDF6EC;   /* ← page background, so the padding reads as a margin, not a card */
+  }
 
-.recipe-details__image {
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  display: block;
-}
-
-.recipe-details__placeholder {
-  width: 100%;
-  height: 260px;
-  background: linear-gradient(135deg, #F3EDE9, #E7DFD8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+  .recipe-details__image,
+  .recipe-details__placeholder {
+    height: auto;
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 16px;   /* optional, but rounded corners read nicer once it's not edge-to-edge */
+  }
 
 .recipe-details__placeholder-logo {
   width: 60px;
