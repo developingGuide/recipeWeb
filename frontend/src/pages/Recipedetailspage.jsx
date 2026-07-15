@@ -22,6 +22,9 @@ export default function RecipeDetailsPage() {
 
   const [activeTimers, setActiveTimers] = useState({});
   const [pausedTimers, setPausedTimers] = useState({});
+
+  const [showAppModal, setShowAppModal] = useState(false);
+
   const timerIntervals = useRef({});
 
   const totalTime = (Number(recipe?.prep_time) || 0) + (Number(recipe?.cook_time) || 0);
@@ -179,104 +182,131 @@ export default function RecipeDetailsPage() {
 
       {/* CONTENT — scrolls normally on web, no drag gesture needed */}
       <div className="recipe-details__content">
-       <div className="recipe-details__content-inner">
-        {recipe.categories?.map((cat, i) => (
-          <span key={i} className="recipe-details__category">
-            {cat}
-          </span>
-        ))}
-
-        <h1 className="recipe-details__title">{recipe.title}</h1>
-        {recipe.description && <p className="recipe-details__description">{recipe.description}</p>}
-
-        {(totalTime > 0 || recipe.servings) && (
-          <div className="recipe-details__stats-row">
-            {totalTime > 0 && (
-              <div className="recipe-details__stat">
-                <span className="recipe-details__stat-value">{totalTime} min</span>
-                <span className="recipe-details__stat-label">Total Time</span>
-              </div>
-            )}
-            {recipe.servings && (
-              <div className="recipe-details__stat">
-                <span className="recipe-details__stat-value">{recipe.servings}</span>
-                <span className="recipe-details__stat-label">Servings</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        <h2 className="recipe-details__section-title">Ingredients</h2>
-        {recipe.ingredients.map((item, index) => (
-          <div key={index} className="recipe-details__ingredient-row">
-            <span className="recipe-details__bullet">•</span>
-            <span className="recipe-details__ingredient-text">
-              <strong>{item.qty}</strong>
-              {item.unit ? ` ${item.unit}` : ""}
-              {item.name ? ` ${item.name}` : ""}
+        <div className="recipe-details__content-inner">
+          {recipe.categories?.map((cat, i) => (
+            <span key={i} className="recipe-details__category">
+              {cat}
             </span>
-          </div>
-        ))}
+          ))}
 
-        <h2 className="recipe-details__section-title">Instructions</h2>
-        {recipe.steps.map((step, index) => {
-          const totalSeconds = step.timer ? step.timer * 60 : null;
-          const remaining = activeTimers[index];
-          const isActive = !pausedTimers[index] && timerIntervals.current[index] != null;
-          const isInitialised = remaining != null;
+          <h1 className="recipe-details__title">{recipe.title}</h1>
+          {recipe.description && <p className="recipe-details__description">{recipe.description}</p>}
 
-          const display = isInitialised
-            ? `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`
-            : `${step.timer} min`;
-
-          return (
-            <div key={index} className="recipe-details__step">
-              <div className="recipe-details__step-number">{index + 1}</div>
-
-              <div className="recipe-details__step-body">
-                <p className="recipe-details__step-text">{step.description}</p>
-
-                {step.tip && (
-                  <p className="recipe-details__tip">
-                    <IoBulbOutline size={14} color="#4CAF50" style={{ verticalAlign: "-2px" }} /> {step.tip}
-                  </p>
-                )}
-
-                {totalSeconds && (
-                  <div className="recipe-details__timer-chip">
-                    <span className="recipe-details__timer-text">⏱ {display}</span>
-                    <div className="recipe-details__timer-controls">
-                      <button
-                        className="recipe-details__timer-btn"
-                        onClick={() =>
-                          isActive ? pauseTimer(index) : startTimer(index, isInitialised ? remaining : totalSeconds)
-                        }
-                        aria-label={isActive ? "Pause timer" : "Start timer"}
-                      >
-                        {isActive ? <IoPause size={14} color="#fff" /> : <IoPlay size={14} color="#fff" />}
-                      </button>
-                      {isInitialised && (
-                        <button
-                          className="recipe-details__timer-btn recipe-details__timer-btn--reset"
-                          onClick={() => resetTimer(index)}
-                          aria-label="Reset timer"
-                        >
-                          <IoRefresh size={14} color="#5C3D1E" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+          {(totalTime > 0 || recipe.servings) && (
+            <div className="recipe-details__stats-row">
+              {totalTime > 0 && (
+                <div className="recipe-details__stat">
+                  <span className="recipe-details__stat-value">{totalTime} min</span>
+                  <span className="recipe-details__stat-label">Total Time</span>
+                </div>
+              )}
+              {recipe.servings && (
+                <div className="recipe-details__stat">
+                  <span className="recipe-details__stat-value">{recipe.servings}</span>
+                  <span className="recipe-details__stat-label">Servings</span>
+                </div>
+              )}
             </div>
-          );
-        })}
+          )}
 
-        <button className="recipe-details__start-btn" onClick={() => navigate(`/cook/${id}`)}>
-          Start Cooking
-        </button>
-       </div>
+          <h2 className="recipe-details__section-title">Ingredients</h2>
+          {recipe.ingredients.map((item, index) => (
+            <div key={index} className="recipe-details__ingredient-row">
+              <span className="recipe-details__bullet">•</span>
+              <span className="recipe-details__ingredient-text">
+                <strong>{item.qty}</strong>
+                {item.unit ? ` ${item.unit}` : ""}
+                {item.name ? ` ${item.name}` : ""}
+              </span>
+            </div>
+          ))}
+
+          <h2 className="recipe-details__section-title">Instructions</h2>
+          {recipe.steps.map((step, index) => {
+            const totalSeconds = step.timer ? step.timer * 60 : null;
+            const remaining = activeTimers[index];
+            const isActive = !pausedTimers[index] && timerIntervals.current[index] != null;
+            const isInitialised = remaining != null;
+
+            const display = isInitialised
+              ? `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`
+              : `${step.timer} min`;
+
+            return (
+              <div key={index} className="recipe-details__step">
+                <div className="recipe-details__step-number">{index + 1}</div>
+
+                <div className="recipe-details__step-body">
+                  <p className="recipe-details__step-text">{step.description}</p>
+
+                  {step.tip && (
+                    <p className="recipe-details__tip">
+                      <IoBulbOutline size={14} color="#4CAF50" style={{ verticalAlign: "-2px" }} /> {step.tip}
+                    </p>
+                  )}
+
+                  {totalSeconds && (
+                    <div className="recipe-details__timer-chip">
+                      <span className="recipe-details__timer-text">⏱ {display}</span>
+                      <div className="recipe-details__timer-controls">
+                        <button
+                          className="recipe-details__timer-btn"
+                          onClick={() =>
+                            isActive ? pauseTimer(index) : startTimer(index, isInitialised ? remaining : totalSeconds)
+                          }
+                          aria-label={isActive ? "Pause timer" : "Start timer"}
+                        >
+                          {isActive ? <IoPause size={14} color="#fff" /> : <IoPlay size={14} color="#fff" />}
+                        </button>
+                        {isInitialised && (
+                          <button
+                            className="recipe-details__timer-btn recipe-details__timer-btn--reset"
+                            onClick={() => resetTimer(index)}
+                            aria-label="Reset timer"
+                          >
+                            <IoRefresh size={14} color="#5C3D1E" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          <button className="recipe-details__start-btn" onClick={() => setShowAppModal(true)}>
+            Start Cooking
+          </button>
+        </div>
       </div>
+
+      {showAppModal && (
+        <div className="app-modal-overlay" onClick={() => setShowAppModal(false)}>
+          <div className="app-modal" onClick={(e) => e.stopPropagation()}>
+            <img src="/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
+            <h2 className="app-modal__title">Add recipes on the go</h2>
+            <p className="app-modal__text">
+              Adding and editing recipes is available in the Recipease app!
+            </p>
+            <p className="app-modal__text">
+              Snap photos, use AI autofill, plan your meals and build your collection from your phone.
+            </p>
+            
+            <a
+              href="https://apps.apple.com/app/recipease-save-plan-cook/id6763539720"
+              className="app-modal__store-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get it on the App Store
+            </a>
+            <button className="app-modal__dismiss" onClick={() => setShowAppModal(false)}>
+              Maybe later
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
