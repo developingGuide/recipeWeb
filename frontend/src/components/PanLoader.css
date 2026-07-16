@@ -1,0 +1,36 @@
+.pan-loader { position: relative; width: 220px; height: 150px; }
+
+.egg-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 48px;
+  width: 58px;
+  transform: translateX(-50%);
+  animation: eggFlip 2s ease-in-out infinite;
+}
+
+.pan-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 156px;
+  transform-origin: 88% 55%;
+  transform: translateX(-50%);
+  animation: panFlip 2s ease-in-out infinite;
+}
+
+@keyframes panFlip {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  20% { transform: translateX(-50%) rotate(-6deg); }
+  35% { transform: translateX(-50%) rotate(16deg); }
+  50% { transform: translateX(-50%) rotate(-3deg); }
+}
+
+@keyframes eggFlip {
+  0%, 100% { transform: translateX(-100%) translateY(43px) rotate(0deg); }
+  20% { transform: translateX(-100%) translateY(50px) rotate(0deg) }
+  42% { transform: translateX(-100%) translateY(-100px) rotate(90deg); }
+  60% { transform: translateX(-100%) translateY(43px) rotate(180deg); }
+  60.01% { transform: translateX(-100%) translateY(43px) rotate(0deg); }
+  80% { transform: translateX(-100%) translateY(43px) rotate(0deg); }
+}

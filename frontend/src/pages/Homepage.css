@@ -369,6 +369,8 @@
 
 .home-page__footer-text{
   text-align: center;
+  color: gray;
+  font-size: small;
 }
 
 .app-footer__store-btn{

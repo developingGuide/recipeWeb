@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import RecipeCard from "../components/RecipeCard";
 import Toast from "../components/Toast";
 import "./Homepage.css";
+import PanLoader from "../components/PanLoader";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -237,9 +238,10 @@ export default function HomePage() {
         </header>
 
         {loading ? (
-          <div className="home-page__empty">
-            <div className="home-page__spinner" />
-          </div>
+          // <div className="home-page__empty">
+          //   <div className="home-page__spinner" />
+          // </div>
+          <PanLoader/>
         ) : recipes.length === 0 ? (
           <div className="home-page__empty">
             <img src="/cracked-bowl-no-bkg.png" alt="" className="home-page__empty-image" />
