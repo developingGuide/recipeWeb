@@ -4,9 +4,11 @@ import './PanLoader.css';
 
 export default function PanLoader() {
   return (
-    <div className="pan-loader">
-      <div className="egg-wrap"><EggSVG className="egg" /></div>
-      <div className="pan-wrap"><PanSVG className="pan" /></div>
+    <div className="loaderContainer">
+      <div className="pan-loader">
+        <div className="egg-wrap"><EggSVG className="egg" /></div>
+        <div className="pan-wrap"><PanSVG className="pan" /></div>
+      </div>
     </div>
   );
 }

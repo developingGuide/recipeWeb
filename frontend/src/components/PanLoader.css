@@ -1,3 +1,8 @@
+.loaderContainer { 
+  display: flex;
+  justify-content: center;
+}
+
 .pan-loader { position: relative; width: 220px; height: 150px; }
 
 .egg-wrap {
