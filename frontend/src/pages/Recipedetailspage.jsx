@@ -10,6 +10,7 @@ import {
 } from "react-icons/io5";
 import { supabase } from "../../lib/supabase";
 import "./RecipeDetailsPage.css";
+import PanLoader from "../components/PanLoader";
 
 export default function RecipeDetailsPage() {
   const { id } = useParams();
@@ -119,9 +120,10 @@ export default function RecipeDetailsPage() {
 
   if (loading) {
     return (
-      <div className="recipe-details__center">
-        <div className="recipe-details__spinner" />
-      </div>
+      // <div className="recipe-details__center">
+      //   <div className="recipe-details__spinner" />
+      // </div>
+      <PanLoader/>
     );
   }
 
