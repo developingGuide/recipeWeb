@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/Homepage";
 import RecipeDetailsPage from "./pages/Recipedetailspage";
 import SearchPage from "./pages/SearchPage";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
         <Route path="/search" element={<SearchPage />} />
       </Routes>
+      <Analytics/>
     </BrowserRouter>
   );
 }
