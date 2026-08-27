@@ -3,14 +3,47 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   IoChevronBackOutline,
   IoEllipsisVertical,
-  IoBulbOutline,
   IoPlay,
   IoPause,
   IoRefresh,
+  IoCheckbox,
+  IoSquareOutline,
+  IoCheckmark,
+  IoTimerOutline,
 } from "react-icons/io5";
 import { supabase } from "../../lib/supabase";
 import "./RecipeDetailsPage.css";
 import PanLoader from "../components/PanLoader";
+
+const MACRO_COLORS = {
+  time: { bg: "#F2F2F2", text: "#5C3D1E", label: "#8C6A4A" },
+  servings: { bg: "#F2F2F2", text: "#5C3D1E", label: "#8C6A4A" },
+  calories: { bg: "#F1EFEC", text: "#5C3D1E", label: "#8C6A4A" },
+  protein: { bg: "#FBE4E4", text: "#B5484D", label: "#C97A7D" },
+  carbs: { bg: "#FBF3D9", text: "#A9822C", label: "#C4A863" },
+  fat: { bg: "#E9E4F7", text: "#7A66B0", label: "#A395C9" },
+};
+
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const buildIngredientMatcher = (ingredients) => {
+  if (!ingredients?.length) return null;
+  const names = ingredients
+    .map((i) => i.name?.trim())
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  if (!names.length) return null;
+  const pattern = names.map(escapeRegExp).join("|");
+  return new RegExp(`\\b(${pattern})\\b`, "gi");
+};
+
+const renderStepWithBoldedIngredients = (text, matcher) => {
+  if (!matcher || !text) return text;
+  const parts = text.split(matcher);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+};
 
 export default function RecipeDetailsPage() {
   const { id } = useParams();
@@ -24,14 +57,15 @@ export default function RecipeDetailsPage() {
   const [activeTimers, setActiveTimers] = useState({});
   const [pausedTimers, setPausedTimers] = useState({});
 
+  const [checkedIngredients, setCheckedIngredients] = useState({});
+  const [completedSteps, setCompletedSteps] = useState({});
+
   const [showAppModal, setShowAppModal] = useState(false);
 
   const timerIntervals = useRef({});
 
   const totalTime = (Number(recipe?.prep_time) || 0) + (Number(recipe?.cook_time) || 0);
 
-  // Public recipes are viewable by anyone with the link — auth is only
-  // needed to know whether to show the edit/delete menu.
   const fetchRecipe = async () => {
     setLoading(true);
 
@@ -108,6 +142,23 @@ export default function RecipeDetailsPage() {
     });
   };
 
+  const toggleIngredient = (index) => {
+    setCheckedIngredients((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const clearCheckedIngredients = () => setCheckedIngredients({});
+
+  const toggleStep = (index) => {
+    setCompletedSteps((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const clearCompletedSteps = () => setCompletedSteps({});
+
+  const getIngredientAmount = (item) => {
+    if (item.amount) return item.amount;
+    return [item.qty, item.unit].filter(Boolean).join(" ");
+  };
+
   useEffect(() => {
     fetchRecipe();
   }, [id]);
@@ -118,13 +169,31 @@ export default function RecipeDetailsPage() {
     };
   }, []);
 
+  // Load saved checklist state whenever the recipe changes
+  useEffect(() => {
+    if (!recipe) return;
+    try {
+      const savedIngredients = localStorage.getItem(`recipe:${id}:checkedIngredients`);
+      const savedSteps = localStorage.getItem(`recipe:${id}:completedSteps`);
+      setCheckedIngredients(savedIngredients ? JSON.parse(savedIngredients) : {});
+      setCompletedSteps(savedSteps ? JSON.parse(savedSteps) : {});
+    } catch (e) {
+      console.log("Error loading checklist state", e);
+    }
+  }, [recipe?.id]);
+
+  useEffect(() => {
+    if (!recipe) return;
+    localStorage.setItem(`recipe:${id}:checkedIngredients`, JSON.stringify(checkedIngredients));
+  }, [checkedIngredients, recipe?.id]);
+
+  useEffect(() => {
+    if (!recipe) return;
+    localStorage.setItem(`recipe:${id}:completedSteps`, JSON.stringify(completedSteps));
+  }, [completedSteps, recipe?.id]);
+
   if (loading) {
-    return (
-      // <div className="recipe-details__center">
-      //   <div className="recipe-details__spinner" />
-      // </div>
-      <PanLoader/>
-    );
+    return <PanLoader />;
   }
 
   if (!recipe) {
@@ -136,6 +205,9 @@ export default function RecipeDetailsPage() {
   }
 
   const isOwner = recipe.user_id === currentUser?.id;
+  const ingredientMatcher = recipe?.ingredients ? buildIngredientMatcher(recipe.ingredients) : null;
+  const completedCount = Object.values(completedSteps).filter(Boolean).length;
+  const hasValue = (v) => v !== null && v !== undefined && v !== "" && Number(v) !== 0;
 
   return (
     <div className="recipe-details">
@@ -182,7 +254,7 @@ export default function RecipeDetailsPage() {
         )}
       </div>
 
-      {/* CONTENT — scrolls normally on web, no drag gesture needed */}
+      {/* CONTENT */}
       <div className="recipe-details__content">
         <div className="recipe-details__content-inner">
           {recipe.categories?.map((cat, i) => (
@@ -194,79 +266,205 @@ export default function RecipeDetailsPage() {
           <h1 className="recipe-details__title">{recipe.title}</h1>
           {recipe.description && <p className="recipe-details__description">{recipe.description}</p>}
 
-          {(totalTime > 0 || recipe.servings) && (
+          {(hasValue(totalTime) ||
+            hasValue(recipe.servings) ||
+            hasValue(recipe.calories) ||
+            hasValue(recipe.protein) ||
+            hasValue(recipe.carbs) ||
+            hasValue(recipe.fat)) && (
             <div className="recipe-details__stats-row">
-              {totalTime > 0 && (
-                <div className="recipe-details__stat">
-                  <span className="recipe-details__stat-value">{totalTime} min</span>
-                  <span className="recipe-details__stat-label">Total Time</span>
+              {hasValue(totalTime) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.time.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.time.text }}>
+                    {totalTime} min
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.time.label }}>
+                    Total Time
+                  </span>
                 </div>
               )}
-              {recipe.servings && (
-                <div className="recipe-details__stat">
-                  <span className="recipe-details__stat-value">{recipe.servings}</span>
-                  <span className="recipe-details__stat-label">Servings</span>
+              {hasValue(recipe.servings) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.servings.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.servings.text }}>
+                    {recipe.servings}
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.servings.label }}>
+                    Servings
+                  </span>
+                </div>
+              )}
+              {hasValue(recipe.calories) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.calories.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.calories.text }}>
+                    {recipe.calories}
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.calories.label }}>
+                    Calories
+                  </span>
+                </div>
+              )}
+              {hasValue(recipe.protein) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.protein.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.protein.text }}>
+                    {recipe.protein}g
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.protein.label }}>
+                    Protein
+                  </span>
+                </div>
+              )}
+              {hasValue(recipe.carbs) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.carbs.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.carbs.text }}>
+                    {recipe.carbs}g
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.carbs.label }}>
+                    Carbs
+                  </span>
+                </div>
+              )}
+              {hasValue(recipe.fat) && (
+                <div className="recipe-details__stat" style={{ background: MACRO_COLORS.fat.bg }}>
+                  <span className="recipe-details__stat-value" style={{ color: MACRO_COLORS.fat.text }}>
+                    {recipe.fat}g
+                  </span>
+                  <span className="recipe-details__stat-label" style={{ color: MACRO_COLORS.fat.label }}>
+                    Fat
+                  </span>
                 </div>
               )}
             </div>
           )}
 
-          <h2 className="recipe-details__section-title">Ingredients</h2>
-          {recipe.ingredients.map((item, index) => (
-            <div key={index} className="recipe-details__ingredient-row">
-              <span className="recipe-details__bullet">•</span>
-              <span className="recipe-details__ingredient-text">
-                <strong>{item.qty}</strong>
-                {item.unit ? ` ${item.unit}` : ""}
-                {item.name ? ` ${item.name}` : ""}
-              </span>
-            </div>
-          ))}
+          {/* INGREDIENTS */}
+          <div className="recipe-details__section-header-row">
+            <h2 className="recipe-details__section-title recipe-details__section-title--flush">Ingredients</h2>
+            {Object.values(checkedIngredients).some(Boolean) && (
+              <button className="recipe-details__clear-btn" onClick={clearCheckedIngredients}>
+                Clear
+              </button>
+            )}
+          </div>
 
-          <h2 className="recipe-details__section-title">Instructions</h2>
+          {recipe.ingredients.map((item, index) => {
+            const isChecked = !!checkedIngredients[index];
+            const amount = getIngredientAmount(item);
+            return (
+              <button
+                key={index}
+                className="recipe-details__ingredient-row"
+                onClick={() => toggleIngredient(index)}
+                type="button"
+              >
+                {isChecked ? (
+                  <IoCheckbox size={20} color="#4CAF50" className="recipe-details__ingredient-icon" />
+                ) : (
+                  <IoSquareOutline size={20} color="#E07A5F" className="recipe-details__ingredient-icon" />
+                )}
+                <span
+                  className={
+                    "recipe-details__ingredient-text" +
+                    (isChecked ? " recipe-details__ingredient-text--checked" : "")
+                  }
+                >
+                  {amount && <strong>{amount} </strong>}
+                  {item.name || ""}
+                </span>
+              </button>
+            );
+          })}
+
+          {/* INSTRUCTIONS */}
+          <div className="recipe-details__instructions-header">
+            <div>
+              <h2 className="recipe-details__section-title recipe-details__section-title--flush">Steps</h2>
+              <p className="recipe-details__instructions-progress">
+                {completedCount} of {recipe.steps.length} completed
+              </p>
+            </div>
+            {Object.values(completedSteps).some(Boolean) && (
+              <button className="recipe-details__clear-btn" onClick={clearCompletedSteps}>
+                Clear
+              </button>
+            )}
+          </div>
+
+          <div className="recipe-details__progress-track">
+            <div
+              className="recipe-details__progress-fill"
+              style={{
+                width: `${recipe.steps.length ? (completedCount / recipe.steps.length) * 100 : 0}%`,
+              }}
+            />
+          </div>
+
           {recipe.steps.map((step, index) => {
             const totalSeconds = step.timer ? step.timer * 60 : null;
             const remaining = activeTimers[index];
             const isActive = !pausedTimers[index] && timerIntervals.current[index] != null;
             const isInitialised = remaining != null;
+            const isCompleted = !!completedSteps[index];
 
             const display = isInitialised
               ? `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`
               : `${step.timer} min`;
 
             return (
-              <div key={index} className="recipe-details__step">
-                <div className="recipe-details__step-number">{index + 1}</div>
+              <div
+                key={index}
+                className={"recipe-details__step" + (isCompleted ? " recipe-details__step--completed" : "")}
+              >
+                <button
+                  className={
+                    "recipe-details__step-number" +
+                    (isCompleted ? " recipe-details__step-number--completed" : "")
+                  }
+                  onClick={() => toggleStep(index)}
+                  type="button"
+                >
+                  {isCompleted ? <IoCheckmark size={15} color="#fff" /> : String(index + 1).padStart(2, "0")}
+                </button>
 
                 <div className="recipe-details__step-body">
-                  <p className="recipe-details__step-text">{step.description}</p>
+                  <p
+                    className={
+                      "recipe-details__step-text" + (isCompleted ? " recipe-details__step-text--done" : "")
+                    }
+                    onClick={() => toggleStep(index)}
+                  >
+                    {renderStepWithBoldedIngredients(step.description, ingredientMatcher)}
+                  </p>
 
                   {step.tip && (
-                    <p className="recipe-details__tip">
-                      <IoBulbOutline size={14} color="#4CAF50" style={{ verticalAlign: "-2px" }} /> {step.tip}
-                    </p>
+                    <div className="recipe-details__tip">
+                      <p className="recipe-details__tip-label">✦ Chef's Tip</p>
+                      <p className="recipe-details__tip-text">{step.tip}</p>
+                    </div>
                   )}
 
                   {totalSeconds && (
                     <div className="recipe-details__timer-chip">
-                      <span className="recipe-details__timer-text">⏱ {display}</span>
+                      <div className="recipe-details__timer-info">
+                        <IoTimerOutline size={18} color="#8C6A4A" />
+                        <span className="recipe-details__timer-text">{display}</span>
+                      </div>
                       <div className="recipe-details__timer-controls">
                         <button
-                          className="recipe-details__timer-btn"
+                          className="recipe-details__timer-play-btn"
                           onClick={() =>
                             isActive ? pauseTimer(index) : startTimer(index, isInitialised ? remaining : totalSeconds)
                           }
                           aria-label={isActive ? "Pause timer" : "Start timer"}
                         >
-                          {isActive ? <IoPause size={14} color="#fff" /> : <IoPlay size={14} color="#fff" />}
+                          {isActive ? <IoPause size={15} color="#fff" /> : <IoPlay size={15} color="#fff" />}
                         </button>
                         {isInitialised && (
                           <button
-                            className="recipe-details__timer-btn recipe-details__timer-btn--reset"
+                            className="recipe-details__timer-secondary-btn"
                             onClick={() => resetTimer(index)}
                             aria-label="Reset timer"
                           >
-                            <IoRefresh size={14} color="#5C3D1E" />
+                            <IoRefresh size={16} color="#8C6A4A" />
                           </button>
                         )}
                       </div>
@@ -288,13 +486,11 @@ export default function RecipeDetailsPage() {
           <div className="app-modal" onClick={(e) => e.stopPropagation()}>
             <img src="/logo-no-bkg.png" alt="Recipease" className="app-modal__logo" />
             <h2 className="app-modal__title">Add recipes on the go</h2>
-            <p className="app-modal__text">
-              Adding and editing recipes is available in the Recipease app!
-            </p>
+            <p className="app-modal__text">Adding and editing recipes is available in the Recipease app!</p>
             <p className="app-modal__text">
               Snap photos, use AI autofill, plan your meals and build your collection from your phone.
             </p>
-            
+
             <a
               href="https://apps.apple.com/app/recipease-save-plan-cook/id6763539720"
               className="app-modal__store-btn"
