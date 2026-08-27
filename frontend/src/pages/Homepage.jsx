@@ -69,6 +69,7 @@ export default function HomePage() {
     const publicPromise = supabase
       .from("recipes")
       .select("*")
+      .eq("user_id", import.meta.env.VITE_WILSON_USER_ID)
       .eq("is_public", true)
       .order("created_at", { ascending: false });
 
