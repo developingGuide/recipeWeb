@@ -66,12 +66,9 @@ export default function HomePage() {
       if (myProfile) setCurrentUserAvatar(myProfile.avatar_url);
     }
 
-    const publicPromise = supabase
-      .from("recipes")
-      .select("*")
-      .eq("user_id", import.meta.env.VITE_WILSON_USER_ID)
-      .eq("is_public", true)
-      .order("created_at", { ascending: false });
+    const response = await fetch('/api/my-recipes');
+
+    const publicPromise = await response.json();
 
     const privatePromise = user
       ? supabase
